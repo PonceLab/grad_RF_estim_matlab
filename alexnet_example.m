@@ -13,13 +13,13 @@ dlImgs = dlarray(single(img),'SSCB');
 disp(layerShapes)
 %%
 img = rand(256,256,3,100)*255.0;
-dlImg = dlarray(single(img),'SSCB');
+dlImg = dlarray(gpuArray(single(img)),'SSCB'); % use gpu input
 dydI = dlfeval(@gradientMap_batch,dlnet,dlImg,'fc6',355);
 gradmap = extractdata(mean(abs(dydI),[3,4]));
 figure;imagesc(gradmap);axis image
 %%
 img = rand(256,256,3,100)*255.0;
-dlImg = dlarray(single(img),'SSCB');
+dlImg = dlarray(single(img),'SSCB'); % use cpu input
 dydI = dlfeval(@gradientMap_batch,dlnet,dlImg,'conv2',1:256,15,15);
 gradmap = extractdata(mean(abs(dydI),[3,4]));
 figure;imagesc(gradmap);axis image
@@ -27,7 +27,7 @@ figure;imagesc(gradmap);axis image
 % another way of computing the map grad * image
 gradimgmap = extractdata(mean(abs(dydI .* dlImg),[3,4]));
 figure;imagesc(gradimgmap);axis image
-%% all layers in alexnet
+%% find rf for all layers in alexnet (mapReceptiveField.m)
 figure;
 tiledlayout("flow",'pad','tight','TileSp','tight');
 repN = 100;
