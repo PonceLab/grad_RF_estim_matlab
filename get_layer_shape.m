@@ -1,17 +1,17 @@
-function [layerShapes, layerShapesMap] = get_layer_shape(dlnet, dlImgs, layerNames)
+function [layerShapes, layerShapesMap] = get_layer_shape(dlnet, layerNames, dlImgs)
 %get_layer_shape Returns the sizes of specific layers in a deep learning network.
 %   
-%   [layerShapes, layerShapesMap] = get_layer_shape(dlnet, dlImgs, layerNames)
+%   [layerShapes, layerShapesMap] = get_layer_shape(dlnet, layerNames, dlImgs)
 %   takes a dlnetwork object (dlnet), a formatted images input (dlImgs),
 %   and a cell array of layer names (layerNames). It returns a table (layerShapes)
 %   and a dictionary (layerShapesMap) mapping each layer name to its output size.
 %
 %   Inputs:
 %   - dlnet: dlnetwork object
-%   - dlImgs: Formatted images for dlnetwork prediction
 %   - layerNames: Cell array of strings, each string is a layer name from dlnet
 %                 This input is optional, if it's not provided, then it will compute 
 %                 shape of all layers in the dlnet.
+%   - dlImgs: Formatted images for dlnetwork prediction, usually rand of 255 scale.
 %
 %   Outputs:
 %   - layerShapes: A table with each row corresponding to a layer. The first column
@@ -21,15 +21,16 @@ function [layerShapes, layerShapesMap] = get_layer_shape(dlnet, dlImgs, layerNam
 %     and its value is the size of the layer's output.
 %
 %   Example:
-%   [layerShapes, layerShapesMap] = get_layer_shape(dlnet, dlImgs, {'layer1','layer2'});
-%   layerShapes = get_layer_shape(dlnet,dlImg,{dlnet.Layers.Name});
-%   layerShapes = get_layer_shape(dlnet,dlImg);
-    if nargin <= 2
+%   [layerShapes, layerShapesMap] = get_layer_shape(dlnet, {'layer1','layer2'}, dlImgs);
+%   layerShapes = get_layer_shape(dlnet,{dlnet.Layers.Name},dlImg);
+%   layerShapes = get_layer_shape(dlnet,{dlnet.Layers.Name});
+%   layerShapes = get_layer_shape(dlnet);
+    if nargin <= 1
         layerNames = {dlnet.Layers.Name};
     end
-    if nargin <= 1
+    if nargin <= 2
         img = rand(256,256,3,1)*255.0;
-        dlImgs = dlarray(single(img),'SSCB');
+        dlImgs = dlarray(gpuArray(single(img)),'SSCB');
         fprintf("Using images of size [256,256,3,1] as input.\n")
     end
     scores_out = cell(1,numel(layerNames));

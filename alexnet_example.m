@@ -9,7 +9,7 @@ disp(layerShapes)
 %% Get layer shape for all layers
 img = rand(256,256,3,1)*255.0;
 dlImgs = dlarray(single(img),'SSCB');
-layerShapes = get_layer_shape(dlnet,dlImgs);
+[layerShapes,layerShapeMap] = get_layer_shape(dlnet,{dlnet.Layers.Name},dlImgs);
 disp(layerShapes)
 %%
 img = rand(256,256,3,100)*255.0;
